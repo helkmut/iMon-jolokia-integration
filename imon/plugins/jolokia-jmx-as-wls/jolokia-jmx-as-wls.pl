@@ -26,7 +26,7 @@ $ENV{TZ} = 'America/Sao_Paulo';
  our $name = basename($0, ".pl");
  our $version="0.2";
  our $date=strftime("%Y-%m-%d",localtime);
- our $path = "/home/imon/imon/plugins/jolokia-jmx-as-wls";
+ our $path = "/home/$ENV{USER}/imon/plugins/jolokia-jmx-as-wls";
  our $log = "$path/logs/jolokia-jmx-as-wls-$date.log";
  our ($opt_object, $opt_port, $opt_host, $opt_context, $opt_managedserver, $opt_help, $opt_verbose, $opt_version, $opt_threshould);
 
@@ -220,9 +220,10 @@ sub stuckthreads {
 
         }
 
-my $directory_dump = "$path/var/dumpthread-$opt_managedserver-$date.log";
+		my $datedump=strftime("%Y-%m-%d-%H",localtime);
+        my $directory_dump = "$path/var/dumpthread-$opt_managedserver-$datedump.log";
 
-        if($counter>=$opt_threshould){
+        if(($counter>=$opt_threshould) and (! -e $directory_dump)){
 
                 if ($opt_verbose == 1) {
 
@@ -275,9 +276,11 @@ sub hoggingthreads {
 
         }
 
-	my $directory_dump = "$path/var/dumpthread-$opt_managedserver-$date.log";
+	    my $datedump=strftime("%Y-%m-%d-%H",localtime);
+        my $directory_dump = "$path/var/dumpthread-$opt_managedserver-$datedump.log";
 
-	if($counter>=$opt_threshould){
+        if(($counter>=$opt_threshould) and (! -e $directory_dump)){
+
 
 		if ($opt_verbose == 1) {
 	
