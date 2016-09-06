@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<restrict>
+
+  <remote>
+    <host>127.0.0.1</host>
+    <host>128.3.0.3</host>
+  </remote>
+
+  <http>
+    <method>get</method>
+	<method>post</method>
+  </http>
+
+  <commands>
+    <command>read</command>
+    <command>list</command>
+	<command>version</command>
+    <command>search</command>
+  </commands>
+
+</restrict>
