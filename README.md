@@ -57,6 +57,9 @@ Help program: jolokia-jmx-java-common.pl
 Examples: 
 
 /home/imon/imon/plugins/jolokia-jmx-as-wls/jolokia-jmx-as-wls.pl -H ORAPROD11G -P 8080 -C jolokia-war-1.3.3 -O StuckThreadCount -S WLS_TEST -T 20 -v 1 
+
+
+
 /home/imon/imon/plugins/jolokia-jmx-java-common/jolokia-jmx-java-common.pl -v 0 -H ORAPROD11G -P 8080 -C jolokia-war-1.3.3 -O HeapMemoryUsage -S WLS_TEST
 
 Status iMon Templates:
