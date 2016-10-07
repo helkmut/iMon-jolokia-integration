@@ -7,6 +7,7 @@
 #        Gabriel Prestes (gabriel.prestes@ilegra.com)
 #
 #30-08-2016 : Created
+#15-09-2016 : Text fix
 
 # Modules
 use strict;
@@ -211,7 +212,7 @@ sub setprops {
                         if ($opt_verbose == 1) {
 
                                 logger("----------------------");
-                                logger("|PROGRAM OUT: HOST - $opt_port|");
+                                logger("|PROGRAM OUT: PORT - $opt_port|");
                                 logger("----------------------");
 
                         }
@@ -225,7 +226,7 @@ sub setprops {
                         if ($opt_verbose == 1) {
 
                                 logger("----------------------");
-                                logger("|PROGRAM OUT: HOST - $opt_context|");
+                                logger("|PROGRAM OUT: CONTEXT - $opt_context|");
                                 logger("----------------------");
 
                         }

@@ -9,6 +9,7 @@
 #16-08-2016 : Created
 #26-08-2016 : Modified(new methods)
 #06-09-2016 : Modified(take threaddump)
+#15-09-2016 : Text fix
 
 # Modules
 use strict;
@@ -339,7 +340,7 @@ sub setprops {
                         if ($opt_verbose == 1) {
 
                                 logger("----------------------");
-                                logger("|PROGRAM OUT: HOST - $opt_port|");
+                                logger("|PROGRAM OUT: PORT - $opt_port|");
                                 logger("----------------------");
 
                         }
@@ -353,7 +354,7 @@ sub setprops {
                         if ($opt_verbose == 1) {
 
                                 logger("----------------------");
-                                logger("|PROGRAM OUT: HOST - $opt_context|");
+                                logger("|PROGRAM OUT: CONTEXT - $opt_context|");
                                 logger("----------------------");
 
                         }
