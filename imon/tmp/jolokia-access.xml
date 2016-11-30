@@ -15,6 +15,7 @@
   <commands>
     <command>read</command>
     <command>list</command>
+    <command>exec</command>
 	<command>version</command>
     <command>search</command>
   </commands>

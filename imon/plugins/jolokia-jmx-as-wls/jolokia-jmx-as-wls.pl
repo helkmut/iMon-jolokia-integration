@@ -367,21 +367,21 @@ sub setprops {
 
 sub check_instances {
 
-	my $instances = `tail -n 20 /proc/cpuinfo | grep processor | awk '{print \$3}'`;
-	my $instances = $instances+5; 
-	my $running = `\$\(which ps\) -ef | grep $name | grep -v grep | wc -l`;
+        my $instances = `cat /proc/cpuinfo | grep processor | wc -l`;
+        my $instances = $instances*2;
+        my $running = `\$\(which ps\) -ef | grep $name | grep -v grep | wc -l`;
 
-	if ($opt_verbose == 1) {
+        if ($opt_verbose == 1) {
 
                 logger("----------------------");
                 logger("|PROGRAM OUT: TEST INSTANCES IN EXECUTION - $date|");
                 logger("----------------------");
 
 
-		logger("MAX INSTANCES ALLOW -> $instances");
-		logger("INSTANCES RUNNING -> $running");
+                logger("MAX INSTANCES ALLOW -> $instances");
+                logger("INSTANCES RUNNING -> $running");
 
-	}
+        }
 
         if( $running >= $instances){
 
