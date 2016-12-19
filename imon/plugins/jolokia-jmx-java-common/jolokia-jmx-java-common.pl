@@ -6,8 +6,9 @@
 # Author:
 #        Gabriel Prestes (gabriel.prestes@ilegra.com)
 #
-#30-08-2016 : Created
-#15-09-2016 : Text fix
+#30-08-2016 : Created (author: Gabriel Prestes)
+#15-09-2016 : Text fix (author: Gabriel Prestes)
+#19-12-2016 : Add heap functions (author: Kristy Noms)
 
 # Modules
 use strict;
@@ -79,9 +80,11 @@ sub main {
 	# --- Choice object option --- #
 	switch ($opt_object) {
 		case "HeapMemoryUsage"		{ heapusage() }
+        case "HeapMemoryMax"        { heapmax() }
+        case "HeapPercent"          { heappercent()}		
 		case "NonHeapMemoryUsage"	{ nonheapusage() }
-		case "ThreadCount"		{ threadcount() }
-		else				{ print "ERROR - Case objects not exist" }
+		case "ThreadCount"		    { threadcount() }
+		else				        { print "ERROR - Case objects not exist" }
 	}
 	
         # --- End agent --- #
@@ -105,7 +108,7 @@ sub exit_program {
 
 sub heapusage {
 
-        my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Memory HeapMemoryUsage`;
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Memory HeapMemoryUsage`;
         my $counter;
 
         foreach(@command){
@@ -134,9 +137,78 @@ sub heapusage {
 
 }
 
+sub heapmax {
+
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Memory HeapMemoryUsage`;
+        my $counter;
+
+        foreach(@command){
+
+                chomp($_);
+                if($_ =~ m/max => (.+)/){
+
+                        $counter=+$1;
+
+                }
+
+        }
+
+        $counter = ($counter/1024)/1024;
+        $counter = sprintf("%.2f", $counter);
+
+        if ($opt_verbose == 1) {
+
+        logger("----------------------");
+        logger("|PROGRAM OUT: HEAP MAX -> $counter|");
+        logger("----------------------");
+
+        }
+
+        print "$counter\n";
+
+}
+
+sub heappercent {
+
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Memory HeapMemoryUsage`;
+        my $counter;
+        my $counter2;
+
+        foreach(@command){
+
+                chomp($_);
+                if($_ =~ m/used => (.+)/){
+
+                        $counter=+$1;
+
+                }
+                                 chomp($_);
+                if($_ =~ m/max => (.+)/){
+
+                        $counter2=+$1;
+
+                }
+
+        }
+
+        $counter = ($counter *100) / $counter2;
+        $counter = sprintf("%.2f", $counter);
+
+        if ($opt_verbose == 1) {
+
+        logger("----------------------");
+        logger("|PROGRAM OUT: HEAP PERCENT -> $counter|");
+        logger("----------------------");
+
+        }
+
+        print "$counter\n";
+
+}
+
 sub nonheapusage {
 
-        my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Memory NonHeapMemoryUsage`;
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Memory NonHeapMemoryUsage`;
         my $counter;
 
         foreach(@command){
@@ -167,7 +239,7 @@ sub nonheapusage {
 
 sub threadcount {
 
-        my $counter = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Threading ThreadCount`;
+        my $counter = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=Threading ThreadCount`;
 	chomp($counter);
 
         if ($opt_verbose == 1) {
