@@ -7,6 +7,7 @@
 #        Gabriel Prestes (gabriel.prestes@ilegra.com)
 #
 #09-11-2016 : Created
+#21-12-2016 : Modified(fix functions logger)
 
 # Modules
 use strict;
@@ -23,9 +24,9 @@ $ENV{"PATH"}="/u01/app/jdk/jdk1.7.0_40/bin:/u01/app/oracle/Middleware/asinst_1/c
 
 # Global variables
  our $name = basename($0, ".pl");
- our $version="0.1";
+ our $version="0.8";
  our $date=strftime("%Y-%m-%d",localtime);
- our $path = "/home/oracle/imon/plugins/oracle-rf-stats";
+ our $path = "/home/$ENV{USER}/imon/plugins/oracle-rf-stats";
  our $log = "$path/logs/$name-$date.log";
  our ($opt_object, $opt_port, $opt_type, $opt_help, $opt_verbose, $opt_version);
 
@@ -402,9 +403,9 @@ sub printHelp {
 
                 Arguments:
 
-		-P  : Port
+				-P  : Port
                 -O  : Object to collect
-		-T  : Type of object
+				-T  : Type of object
                 -V  : Version
                 -h  : Help
                 -v 1: Send to log(debug mode)

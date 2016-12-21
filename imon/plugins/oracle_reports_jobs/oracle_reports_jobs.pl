@@ -8,6 +8,7 @@
 #
 #15-09-2016 : Created
 #07-10-2016 : Modified
+#21-12-2016 : Modified(fix functions logger)
 
 # Modules
 use strict;
@@ -23,9 +24,9 @@ $ENV{TZ} = 'America/Sao_Paulo';
 
 # Global variables
  our $name = basename($0, ".pl");
- our $version="0.3";
+ our $version="0.8";
  our $date=strftime("%Y-%m-%d",localtime);
- our $path = "/home/oracle/imon/plugins/oracle_reports_jobs";
+ our $path = "/home/$ENV{USER}/imon/plugins/oracle_reports_jobs";
  our $log = "$path/logs/oracle_reports_jobs_-$date.log";
  our ($opt_object, $opt_port, $opt_host, $opt_context, $opt_help, $opt_verbose, $opt_version, $opt_server, $opt_count);
 
@@ -76,7 +77,7 @@ sub main {
 		case "pastsuccess"	{ pastsuccess() }
 		case "pasterror"	{ pasterror() }
 		case "future"		{ future() }
-		else			{ print "ERROR - Case objects not exist" }
+		else                { logger("ERROR - Case objects not exist") }
 	}
 	
         if ($opt_verbose == 1) {
@@ -100,7 +101,7 @@ sub exit_program {
 sub pastsuccess {
 
         my @job = ();
-        my @page = `/usr/bin/elinks \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=past&count=$opt_count\' -dump`;
+        my @page = `\$\(which elinks\) \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=past&count=$opt_count\' -dump`;
         my $flag = 0;
         my $line;
 
@@ -120,7 +121,7 @@ sub pastsuccess {
 
                         if($_ =~ m/.+\. (.+)/){ $line = $1; }
 
-                        @job = `/usr/bin/elinks \'$line\' -dump`;
+                        @job = `\$\(which elinks\) \'$line\' -dump`;
 
 			if ($opt_verbose == 1) {
 
@@ -154,7 +155,7 @@ sub pastsuccess {
 
         }
 
-        print "$flag\n";
+        logger("$flag");
 
 
 }
@@ -162,7 +163,7 @@ sub pastsuccess {
 sub pasterror {
 
 	my @job = ();
-	my @page = `/usr/bin/elinks \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=past&count=$opt_count\' -dump`;
+	my @page = `\$\(which elinks\) \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=past&count=$opt_count\' -dump`;
 	my $flag = 0;
 	my $line;
 
@@ -174,7 +175,7 @@ sub pasterror {
 
 			if($_ =~ m/.+\. (.+)/){ $line = $1; }
 
-			@job = `/usr/bin/elinks \'$line\' -dump`;
+			@job = `\$\(which elinks\) \'$line\' -dump`;
 
 			foreach(@job){
 
@@ -200,13 +201,13 @@ sub pasterror {
 
 	}
 
-	print "$flag\n";
+	logger("$flag");
 
 }
 
 sub future {
 
-        my @page = `/usr/bin/elinks \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=$opt_object&count=$opt_count\' -dump`;
+        my @page = `\$\(which elinks\) \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=$opt_object&count=$opt_count\' -dump`;
         my $flag = 0;
 
         foreach(@page){
@@ -239,7 +240,7 @@ sub future {
 
 sub current {
 
-        my @page = `/usr/bin/elinks \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=$opt_object&count=$opt_count\' -dump`;
+        my @page = `\$\(which elinks\) \'http://$opt_host:$opt_port/$opt_context/rwservlet/showjobs?server=$opt_server&queuetype=$opt_object&count=$opt_count\' -dump`;
         my $flag = 0;
 
         foreach(@page){
@@ -266,7 +267,7 @@ sub current {
 
         }
 
-        print "$flag\n";
+        logger("$flag");
 
 
 }
@@ -401,8 +402,8 @@ sub getoption {
             'H|host=s'                  => \$opt_host,
             'P|port=i'                  => \$opt_port,
             'C|context=s'               => \$opt_context,
-	    'c|count=i'                  => \$opt_count,
-            'S|server=s'        	=> \$opt_server,
+			'c|count=i'                 => \$opt_count,
+            'S|server=s'        		=> \$opt_server,
             'V|version'                 => \$opt_version,
             'h|help'                    => \$opt_help,
             'v|verbose=i'               => \$opt_verbose,
@@ -481,12 +482,12 @@ sub printHelp {
 
                 Arguments:
 
-		-H  : IP address of host 
-		-O  : Object to collect
-		-C  : Context-root of Reports
-		-c  : Total history of jobs to check
-		-P  : Port
-		-S  : Server
+				-H  : IP address of host 
+				-O  : Object to collect
+				-C  : Context-root of Reports
+				-c  : Total history of jobs to check
+				-P  : Port
+				-S  : Server
                 -V  : Version
                 -h  : Help
                 -v 1: Send to log(debug mode)
@@ -498,7 +499,7 @@ sub printHelp {
                 use Getopt::Long;
                 use POSIX;
                 use File::Basename;
-		use Switch;
+				use Switch;
 
                 E.g: $path/bin/oracle_reports_jobs.pl -v 1
 

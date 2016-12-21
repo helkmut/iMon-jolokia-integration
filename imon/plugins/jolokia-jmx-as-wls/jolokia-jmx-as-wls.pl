@@ -10,6 +10,7 @@
 #26-08-2016 : Modified(new methods)
 #06-09-2016 : Modified(take threaddump)
 #15-09-2016 : Text fix
+#21-12-2016 : Modified(fix functions logger)
 
 # Modules
 use strict;
@@ -25,7 +26,7 @@ $ENV{TZ} = 'America/Sao_Paulo';
 
 # Global variables
  our $name = basename($0, ".pl");
- our $version="0.2";
+ our $version="0.8";
  our $date=strftime("%Y-%m-%d",localtime);
  our $path = "/home/$ENV{USER}/imon/plugins/jolokia-jmx-as-wls";
  our $log = "$path/logs/jolokia-jmx-as-wls-$date.log";
@@ -74,15 +75,15 @@ sub main {
 	setprops();
 
 	switch ($opt_object) {
-		case "StuckThreadCount"		{ stuckthreads() }
-		case "HoggingThreadCount"	{ hoggingthreads() }
-		case "Throughput"		{ throughput() }
-		case "ExecuteThreadTotalCount"	{ executethreads() }
-		case "GCCollectionTimeScavenge"	{ gctime("Scavenge") }
-		case "GCCollectionCountScavenge"{ gccount("Scavenge") }
-                case "GCCollectionTimeMarkSweep" { gctime("MarkSweep") }
-                case "GCCollectionCountMarkSweep"{ gccount("MarkSweep") }
-		else				{ print "ERROR - Case objects not exist" }
+		case "StuckThreadCount"				{ stuckthreads() }
+		case "HoggingThreadCount"			{ hoggingthreads() }
+		case "Throughput"	   				{ throughput() }
+		case "ExecuteThreadTotalCount"		{ executethreads() }
+		case "GCCollectionTimeScavenge"		{ gctime("Scavenge") }
+		case "GCCollectionCountScavenge"	{ gccount("Scavenge") }
+        case "GCCollectionTimeMarkSweep" 	{ gctime("MarkSweep") }
+        case "GCCollectionCountMarkSweep"	{ gccount("MarkSweep") }
+		else                            	{ logger("ERROR - Case objects not exist") }
 	}
 	
         if ($opt_verbose == 1) {
@@ -105,7 +106,7 @@ sub exit_program {
 
 sub throughput {
 
-        my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:Name=*,ServerRuntime=$opt_managedserver,Type=ThreadPoolRuntime Throughput`;
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:Name=*,ServerRuntime=$opt_managedserver,Type=ThreadPoolRuntime Throughput`;
         my $counter;
 
         foreach(@command){
@@ -137,7 +138,7 @@ sub gccount {
 
 	my $type = shift (@_);
 	chomp($type);
-        my $counter = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:name=\'PS $type\',type=GarbageCollector CollectionCount`;
+        my $counter = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:name=\'PS $type\',type=GarbageCollector CollectionCount`;
 
         if ($opt_verbose == 1) {
 
@@ -147,7 +148,7 @@ sub gccount {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -155,7 +156,7 @@ sub gctime {
 
         my $type = shift (@_);
         chomp($type);
-        my $counter = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:name=\'PS $type\',type=GarbageCollector CollectionTime`;
+        my $counter = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:name=\'PS $type\',type=GarbageCollector CollectionTime`;
 
         if ($opt_verbose == 1) {
 
@@ -165,13 +166,13 @@ sub gctime {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
 sub executethreads {
 
-        my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:Name=*,ServerRuntime=$opt_managedserver,Type=ThreadPoolRuntime ExecuteThreadTotalCount`;
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:Name=*,ServerRuntime=$opt_managedserver,Type=ThreadPoolRuntime ExecuteThreadTotalCount`;
         my $counter;
 
         foreach(@command){
@@ -193,13 +194,13 @@ sub executethreads {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
 sub stuckthreads {
 
-	my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:ApplicationRuntime=*,Name=*,ServerRuntime=$opt_managedserver,Type=WorkManagerRuntime StuckThreadCount`;
+	my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:ApplicationRuntime=*,Name=*,ServerRuntime=$opt_managedserver,Type=WorkManagerRuntime StuckThreadCount`;
 	my $counter;
 
 	foreach(@command){
@@ -234,7 +235,7 @@ sub stuckthreads {
 
                 }
 
-                my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context exec java.lang:type=Threading dumpAllThreads true true`;
+                my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context exec java.lang:type=Threading dumpAllThreads true true`;
 
                 open(DUMP, ">>$directory_dump") or do error();
 
@@ -249,13 +250,13 @@ sub stuckthreads {
 
         }
 
-	print "$counter\n";
+	logger($counter);
 
 }
 
 sub hoggingthreads {
 
-        my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:Name=*,ServerRuntime=$opt_managedserver,Type=ThreadPoolRuntime HoggingThreadCount`;
+        my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read com.bea:Name=*,ServerRuntime=$opt_managedserver,Type=ThreadPoolRuntime HoggingThreadCount`;
         my $counter;
 
         foreach(@command){
@@ -291,7 +292,7 @@ sub hoggingthreads {
 
 		}
 
-		my @command = `/usr/local/bin/jmx4perl --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context exec java.lang:type=Threading dumpAllThreads true true`;
+		my @command = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context exec java.lang:type=Threading dumpAllThreads true true`;
 
            	open(DUMP, ">>$directory_dump") or do error();
 
@@ -306,7 +307,7 @@ sub hoggingthreads {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -499,11 +500,11 @@ sub printHelp {
 
                 Arguments:
 
-		-H  : IP address of host 
-		-O  : Object to collect
-		-C  : Context-root of Jolokia
-		-T  : Threshoulds for take threaddump of server container(J2EE)
-		-P  : Port
+				-H  : IP address of host 
+				-O  : Object to collect
+				-C  : Context-root of Jolokia
+				-T  : Threshoulds for take threaddump of server container(J2EE)
+				-P  : Port
                 -V  : Version
                 -h  : Help
                 -v 1: Send to log(debug mode)
@@ -515,7 +516,7 @@ sub printHelp {
                 use Getopt::Long;
                 use POSIX;
                 use File::Basename;
-		use Switch;
+				use Switch;
 
                 E.g: $path/bin/jolokia-jmx-as-wls.pl -v 1
 

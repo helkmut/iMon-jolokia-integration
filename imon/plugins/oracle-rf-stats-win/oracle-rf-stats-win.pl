@@ -7,6 +7,7 @@
 #        Gabriel Prestes (gabriel.prestes@ilegra.com)
 #
 #16-11-2016 : Created
+#21-12-2016 : Modified(fix functions logger)
 
 # Modules
 use strict;
@@ -22,7 +23,7 @@ $ENV{TZ} = 'America/Sao_Paulo';
 
 # Global variables
  our $name = basename($0, ".pl");
- our $version="0.1";
+ our $version="0.8";
  our $date=strftime("%Y-%m-%d",localtime);
  our $path = "$ENV{HOME}/imon/plugins/oracle-rf-stats-win";
  our $log = "$path/logs/$name-$date.log";
@@ -401,10 +402,10 @@ sub printHelp {
 
                 Arguments:
 
-		-H  : host
-		-P  : Port
+				-H  : host
+				-P  : Port
                 -O  : Object to collect
-		-T  : Type of object
+				-T  : Type of object
                 -V  : Version
                 -h  : Help
                 -v 1: Send to log(debug mode)

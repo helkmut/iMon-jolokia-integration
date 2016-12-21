@@ -9,6 +9,7 @@
 #30-08-2016 : Created (author: Gabriel Prestes)
 #15-09-2016 : Text fix (author: Gabriel Prestes)
 #19-12-2016 : Add heap functions (author: Kristy Noms)
+#21-12-2016 : Modified(fix functions logger)
 
 # Modules
 use strict;
@@ -24,9 +25,9 @@ $ENV{TZ} = 'America/Sao_Paulo';
 
 # Global variables
  our $name = basename($0, ".pl");
- our $version="0.1";
+ our $version="0.8";
  our $date=strftime("%Y-%m-%d",localtime);
- our $path = "/home/imon/imon/plugins/jolokia-jmx-java-common";
+ our $path = "/home/$ENV{USER}/imon/plugins/jolokia-jmx-java-common";
  our $log = "$path/logs/jolokia-jmx-java-common-$date.log";
  our ($opt_object, $opt_port, $opt_host, $opt_context, $opt_managedserver, $opt_help, $opt_verbose, $opt_version);
 
@@ -84,7 +85,7 @@ sub main {
         case "HeapPercent"          { heappercent()}		
 		case "NonHeapMemoryUsage"	{ nonheapusage() }
 		case "ThreadCount"		    { threadcount() }
-		else				        { print "ERROR - Case objects not exist" }
+        else                        { logger("ERROR - Case objects not exist") }
 	}
 	
         # --- End agent --- #
@@ -133,7 +134,7 @@ sub heapusage {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -164,7 +165,7 @@ sub heapmax {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -202,7 +203,7 @@ sub heappercent {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -233,7 +234,7 @@ sub nonheapusage {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -250,7 +251,7 @@ sub threadcount {
 
         }
 
-        print "$counter\n";
+        logger($counter);
 
 }
 
@@ -434,10 +435,10 @@ sub printHelp {
 
                 Arguments:
 
-		-H  : IP address of host 
-		-O  : Object to collect
-		-C  : Context-root of Jolokia
-		-P  : Port
+				-H  : IP address of host 
+				-O  : Object to collect
+				-C  : Context-root of Jolokia
+				-P  : Port
                 -V  : Version
                 -h  : Help
                 -v 1: Send to log(debug mode)
@@ -449,7 +450,7 @@ sub printHelp {
                 use Getopt::Long;
                 use POSIX;
                 use File::Basename;
-		use Switch;
+				use Switch;
 
                 E.g: $path/bin/jolokia-jmx-java-common.pl -v 1
 
