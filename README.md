@@ -15,6 +15,8 @@ v0.5 -> Fix function and paths(Gabriel Prestes)
 
 v0.6 -> Add Java Commons heapusage percent and heapspace max(Kristy Noms)
 
+v0.7 and v0.8 -> Functions logger fix(Gabriel Prestes) 
+
 
 
 
