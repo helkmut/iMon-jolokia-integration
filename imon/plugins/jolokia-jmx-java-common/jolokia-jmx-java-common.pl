@@ -10,6 +10,7 @@
 #15-09-2016 : Text fix (author: Gabriel Prestes)
 #19-12-2016 : Add heap functions (author: Kristy Noms)
 #21-12-2016 : Modified(fix functions logger)
+#27-12-2016 : Add cpuprocess function (author: Gabriel Prestes)
 
 # Modules
 use strict;
@@ -84,6 +85,7 @@ sub main {
         case "HeapMemoryMax"        { heapmax() }
         case "HeapPercent"          { heappercent()}		
 		case "NonHeapMemoryUsage"	{ nonheapusage() }
+		case "ProcessCpuLoad"       { cpuload() }
 		case "ThreadCount"		    { threadcount() }
         else                        { logger("ERROR - Case objects not exist") }
 	}
@@ -235,6 +237,26 @@ sub nonheapusage {
         }
 
         logger($counter);
+
+}
+
+sub cpuload {
+
+        my $counter = `\$\(which jmx4perl\) --option ignoreErrors=true http://$opt_host:$opt_port/$opt_context read java.lang:type=OperatingSystem ProcessCpuLoad`;
+        chomp($counter);
+
+        if ($opt_verbose == 1) {
+
+        logger("----------------------");
+        logger("|PROGRAM OUT: TOTAL THREADS -> $counter|");
+        logger("----------------------");
+
+        }
+
+        $counter = sprintf("%.2f", $counter);
+
+        logger($counter);
+
 
 }
 
@@ -391,7 +413,7 @@ sub getoption {
 
      if(!$opt_managedserver){
 
-            print "Error - Missing option -MS or --managedserver\n";
+            print "Error - Missing option -S or --managedserver\n";
             exit;
 
      }
